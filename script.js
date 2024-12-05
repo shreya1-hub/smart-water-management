@@ -53,17 +53,23 @@ function renderUsageChart() {
 
 // Function to update water usage data
 function updateUsage() {
-    const region = document.getElementById("region").value;
-    const newUsage = parseInt(document.getElementById("usage").value);
-    if (!isNaN(newUsage)) {
-        usageData[region] = newUsage; // Update the usage data
-        renderUsageChart(); // Re-render the chart with updated data
-        alert(`${region} usage updated to ${newUsage} liters.`);
-        document.getElementById("usage").value = ""; // Clear the input field
-    } else {
-        alert("Please enter a valid usage value.");
+    const region = document.getElementById("region").value; // Get selected region
+    const usageInput = document.getElementById("usage").value.trim(); // Get and trim input value
+    const newUsage = parseInt(usageInput); // Parse input to an integer
+
+    // Validate the input
+    if (usageInput === "" || isNaN(newUsage) || newUsage < 0) {
+        alert("Please enter a valid usage value (non-negative number).");
+        return;
     }
+
+    // Update usage data and re-render the chart
+    usageData[region] = newUsage;
+    renderUsageChart();
+    alert(`${region} usage updated to ${newUsage} liters.`);
+    document.getElementById("usage").value = ""; // Clear the input field
 }
+
 
 // Initial renderings
 updatePHLevels();
