@@ -34,10 +34,10 @@ document.addEventListener('DOMContentLoaded', function () {
         usageChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Urban', 'Agricultural'], // Regions
+                labels: ['Urban', 'Agricultural'],
                 datasets: [{
                     label: 'Water Usage (Liters)',
-                    data: [usageData.Urban, usageData.Agricultural], // Usage data
+                    data: [usageData.Urban, usageData.Agricultural],
                     backgroundColor: ['#4CAF50', '#2196F3']
                 }]
             },
@@ -53,32 +53,36 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Function to update water usage data
-   function updateUsage() {
-    // Get the region and usage input values
-    const region = document.getElementById("region").value;
-    const usageInputElement = document.getElementById("usage");
+    function updateUsage() {
+        try {
+            const region = document.getElementById("region").value;
+            const usageInputElement = document.getElementById("usage");
 
-    if (!usageInputElement) {
-        console.error("Input field with id 'usage' not found.");
-        return;
+            if (!usageInputElement) {
+                console.error("Input field with id 'usage' not found.");
+                alert("Error: Unable to find the input field.");
+                return;
+            }
+
+            const usageInput = usageInputElement.value.trim();
+            const newUsage = parseFloat(usageInput);
+
+            if (usageInput === "" || isNaN(newUsage) || newUsage < 0) {
+                alert("Please enter a valid usage value (non-negative number).");
+                console.error("Invalid input:", usageInput);
+                return;
+            }
+
+            usageData[region] = newUsage;
+            renderUsageChart();
+            alert(`${region} usage updated to ${newUsage} liters.`);
+            usageInputElement.value = "";
+            console.log(`Updated ${region} usage to ${newUsage} liters.`);
+        } catch (error) {
+            console.error("Error in updateUsage function:", error);
+            alert("An unexpected error occurred. Check the console for details.");
+        }
     }
-
-    const usageInput = usageInputElement.value.trim(); // Get and trim the input value
-    const newUsage = parseFloat(usageInput); // Convert to a float
-
-    // Validate the input
-    if (usageInput === "" || isNaN(newUsage) || newUsage < 0) {
-        alert("Please enter a valid usage value (non-negative number).");
-        return; // Exit the function if input is invalid
-    }
-
-    // Update usage data and re-render the chart
-    usageData[region] = newUsage; // Update the data for the selected region
-    renderUsageChart(); // Update the chart dynamically
-    alert(`${region} usage updated to ${newUsage} liters.`); // Show success alert
-    usageInputElement.value = ""; // Clear the input field
-}
-
 
     // Initial rendering
     updatePHLevels();
