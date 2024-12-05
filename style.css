@@ -11,6 +11,7 @@ header {
     background-color: #4CAF50;
     color: white;
     padding: 20px 0;
+    margin-bottom: 20px;
 }
 
 h1 {
@@ -29,6 +30,19 @@ main {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
 }
 
 footer {
