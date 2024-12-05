@@ -1,40 +1,49 @@
-// Mock Data
-const data = {
-    phLevels: [7.2, 6.0],
-    connections: [
-        { from: "Urban", to: "Agricultural", flow: "10 L/s" },
-        { from: "Agricultural", to: "Industrial", flow: "15 L/s" }
-    ],
-    usage: {
-        Urban: "500 L",
-        Agricultural: "1000 L"
-    },
-    leakage: {
-        flow: 45,
-        threshold: 50
+// Existing mock data
+let pHLevels = [7.2, 6.0];
+let usageData = { Urban: 500, Agricultural: 1000 };
+
+// Function to update displayed pH levels
+function updatePHLevels() {
+    const phLevelsElement = document.getElementById("ph-levels");
+    phLevelsElement.innerHTML = `pH Levels: ${pHLevels.join(", ")} ${
+        pHLevels.some(ph => ph < 6.5 || ph > 8.5) ? "(Detected Issues)" : "(All Good)"
+    }`;
+}
+
+// Function to add a new pH level
+function addPHLevel() {
+    const newPH = parseFloat(document.getElementById("new-ph").value);
+    if (!isNaN(newPH)) {
+        pHLevels.push(newPH);
+        updatePHLevels();
+        document.getElementById("new-ph").value = ""; // Clear the input field
     }
-};
+}
 
-// Populate Water Quality
-const phLevelsElement = document.getElementById("ph-levels");
-phLevelsElement.innerHTML = `pH Levels: ${data.phLevels.join(", ")} (Detected Issues)`;
+// Render Water Usage Chart
+function renderUsageChart() {
+    const ctx = document.getElementById('usage-chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Urban', 'Agricultural'], // Regions
+            datasets: [{
+                label: 'Water Usage (Liters)',
+                data: [usageData.Urban, usageData.Agricultural], // Usage data
+                backgroundColor: ['#4CAF50', '#2196F3']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            }
+        }
+    });
+}
 
-// Populate Distribution Network
-const connectionsElement = document.getElementById("connections");
-connectionsElement.innerHTML = data.connections
-    .map(conn => `<li>${conn.from} -> ${conn.to} (${conn.flow})</li>`)
-    .join("");
-
-// Populate Usage Data
-const usageElement = document.getElementById("usage-data");
-usageElement.innerHTML = Object.entries(data.usage)
-    .map(([region, usage]) => `<li>${region}: ${usage}</li>`)
-    .join("");
-
-// Populate Leakage Detection
-const leakageElement = document.getElementById("leak-status");
-const leakageStatus =
-    data.leakage.flow < data.leakage.threshold
-        ? `Potential leakage detected. Total flow = ${data.leakage.flow} L`
-        : "No leakage detected.";
-leakageElement.innerHTML = `Status: ${leakageStatus}`;
+// Initial rendering
+updatePHLevels();
+renderUsageChart();
