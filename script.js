@@ -55,11 +55,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to update water usage data
     function updateUsage() {
         const region = document.getElementById("region").value;
-        const newUsage = parseInt(document.getElementById("usage").value);
-        if (isNaN(newUsage) || newUsage < 0) {
-            alert("Please enter a valid usage value.");
+        const usageInput = document.getElementById("usage").value.trim();
+        const newUsage = parseInt(usageInput);
+
+        if (usageInput === "" || isNaN(newUsage) || newUsage < 0) {
+            alert("Please enter a valid usage value (non-negative number).");
             return;
         }
+
         usageData[region] = newUsage;
         renderUsageChart();
         alert(`${region} usage updated to ${newUsage} liters.`);
