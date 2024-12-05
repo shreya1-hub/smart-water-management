@@ -1,7 +1,7 @@
 // Existing mock data
 let pHLevels = [7.2, 6.0];
 let usageData = { Urban: 500, Agricultural: 1000 };
-let usageChart;
+let usageChart; // Declare globally for proper re-rendering
 
 // Function to update displayed pH levels
 function updatePHLevels() {
@@ -27,14 +27,16 @@ function addPHLevel() {
 // Function to render water usage chart
 function renderUsageChart() {
     const ctx = document.getElementById('usage-chart').getContext('2d');
-    if (usageChart) usageChart.destroy(); // Destroy the previous chart
+    if (usageChart) {
+        usageChart.destroy(); // Destroy the previous chart instance
+    }
     usageChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Urban', 'Agricultural'],
+            labels: ['Urban', 'Agricultural'], // Regions
             datasets: [{
                 label: 'Water Usage (Liters)',
-                data: [usageData.Urban, usageData.Agricultural],
+                data: [usageData.Urban, usageData.Agricultural], // Usage data
                 backgroundColor: ['#4CAF50', '#2196F3']
             }]
         },
@@ -54,7 +56,7 @@ function updateUsage() {
     const region = document.getElementById("region").value;
     const newUsage = parseInt(document.getElementById("usage").value);
     if (!isNaN(newUsage)) {
-        usageData[region] = newUsage;
+        usageData[region] = newUsage; // Update the usage data
         renderUsageChart(); // Re-render the chart with updated data
         alert(`${region} usage updated to ${newUsage} liters.`);
         document.getElementById("usage").value = ""; // Clear the input field
