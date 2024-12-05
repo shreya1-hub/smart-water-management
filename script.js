@@ -1,5 +1,7 @@
-// Mock data for pH levels
+// Mock data for pH levels and water usage
 let pHLevels = [7.2, 6.0];
+let usageData = { Urban: 500, Agricultural: 1000 };
+let usageChart; // Declare chart globally
 
 // Function to update the displayed pH levels
 function updatePHLevels() {
@@ -22,5 +24,47 @@ function addPHLevel() {
     alert("New pH Level Added Successfully!"); // Success alert
 }
 
-// Initial render of pH levels
+// Function to render water usage chart
+function renderUsageChart() {
+    const ctx = document.getElementById('usage-chart').getContext('2d');
+    if (usageChart) {
+        usageChart.destroy(); // Destroy the previous chart instance
+    }
+    usageChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Urban', 'Agricultural'], // Regions
+            datasets: [{
+                label: 'Water Usage (Liters)',
+                data: [usageData.Urban, usageData.Agricultural], // Usage data
+                backgroundColor: ['#4CAF50', '#2196F3']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            }
+        }
+    });
+}
+
+// Function to update water usage data
+function updateUsage() {
+    const region = document.getElementById("region").value;
+    const newUsage = parseInt(document.getElementById("usage").value); // Get usage input and convert to number
+    if (isNaN(newUsage) || newUsage < 0) {
+        alert("Please enter a valid usage value (non-negative number).");
+        return; // Exit if invalid input
+    }
+    usageData[region] = newUsage; // Update the usage data
+    renderUsageChart(); // Re-render the chart with updated data
+    alert(`${region} usage updated to ${newUsage} liters.`);
+    document.getElementById("usage").value = ""; // Clear the input field
+}
+
+// Initial rendering
 updatePHLevels();
+renderUsageChart();
