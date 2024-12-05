@@ -54,34 +54,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to update water usage data
     function updateUsage() {
-        try {
-            const region = document.getElementById("region").value;
-            const usageInputElement = document.getElementById("usage");
+        const region = document.getElementById("region").value;
+        const usageInputElement = document.getElementById("usage");
 
-            if (!usageInputElement) {
-                console.error("Input field with id 'usage' not found.");
-                alert("Error: Unable to find the input field.");
-                return;
-            }
-
-            const usageInput = usageInputElement.value.trim();
-            const newUsage = parseFloat(usageInput);
-
-            if (usageInput === "" || isNaN(newUsage) || newUsage < 0) {
-                alert("Please enter a valid usage value (non-negative number).");
-                console.error("Invalid input:", usageInput);
-                return;
-            }
-
-            usageData[region] = newUsage;
-            renderUsageChart();
-            alert(`${region} usage updated to ${newUsage} liters.`);
-            usageInputElement.value = "";
-            console.log(`Updated ${region} usage to ${newUsage} liters.`);
-        } catch (error) {
-            console.error("Error in updateUsage function:", error);
-            alert("An unexpected error occurred. Check the console for details.");
+        // Check if the input element exists
+        if (!usageInputElement) {
+            console.error("Input field with id 'usage' not found.");
+            alert("Error: Input field not found. Please check your HTML structure.");
+            return;
         }
+
+        const usageInput = usageInputElement.value.trim();
+        const newUsage = parseFloat(usageInput);
+
+        // Validate the input
+        if (usageInput === "" || isNaN(newUsage) || newUsage < 0) {
+            alert("Please enter a valid usage value (non-negative number).");
+            return;
+        }
+
+        // Update usage data and re-render the chart
+        usageData[region] = newUsage;
+        renderUsageChart();
+        alert(`${region} usage updated to ${newUsage} liters.`);
+        usageInputElement.value = ""; // Clear the input field
     }
 
     // Initial rendering
