@@ -5,16 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Water Management System</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Add Chart.js for the usage chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
         <h1>Smart Water Management System</h1>
     </header>
     <main>
+        <!-- Water Quality Monitoring Section -->
         <section id="water-quality" class="module">
             <h2>Water Quality Monitoring</h2>
             <p id="ph-levels">pH Levels: <span>Fetching...</span></p>
+            <!-- Form to input new pH levels -->
+            <form id="ph-form">
+                <label for="new-ph">Enter pH Level:</label>
+                <input type="number" id="new-ph" step="0.1" required>
+                <button type="button" onclick="addPHLevel()">Add pH Level</button>
+            </form>
         </section>
+
+        <!-- Water Distribution Network Section -->
         <section id="distribution" class="module">
             <h2>Water Distribution Network</h2>
             <p>Connections:</p>
@@ -22,12 +33,14 @@
                 <li>Fetching data...</li>
             </ul>
         </section>
+
+        <!-- Water Usage Analysis Section -->
         <section id="usage" class="module">
             <h2>Water Usage Analysis</h2>
-            <ul id="usage-data">
-                <li>Fetching data...</li>
-            </ul>
+            <canvas id="usage-chart" width="400" height="200"></canvas>
         </section>
+
+        <!-- Leakage Detection Section -->
         <section id="leakage" class="module">
             <h2>Leakage Detection</h2>
             <p id="leak-status">Status: Fetching...</p>
