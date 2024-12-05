@@ -53,25 +53,38 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Function to update water usage data
-    function updateUsage() {
+   function updateUsage() {
+    try {
         const region = document.getElementById("region").value;
         const usageInputElement = document.getElementById("usage");
 
-        // Check if the input element exists
+        // Check if the input field exists
         if (!usageInputElement) {
             console.error("Input field with id 'usage' not found.");
             alert("Error: Input field not found. Please check your HTML structure.");
             return;
         }
 
-        const usageInput = usageInputElement.value.trim();
-        const newUsage = parseFloat(usageInput);
+        const usageInput = usageInputElement.value.trim(); // Get and trim the input value
+        const newUsage = parseFloat(usageInput); // Convert to a number
 
         // Validate the input
         if (usageInput === "" || isNaN(newUsage) || newUsage < 0) {
             alert("Please enter a valid usage value (non-negative number).");
             return;
         }
+
+        // Update the data and re-render the chart
+        usageData[region] = newUsage; // Update the data for the selected region
+        renderUsageChart(); // Refresh the chart dynamically
+        alert(`${region} usage updated to ${newUsage} liters.`);
+        usageInputElement.value = ""; // Clear the input field
+    } catch (error) {
+        console.error("Error in updateUsage function:", error);
+        alert("An unexpected error occurred. Check the console for details.");
+    }
+}
+
 
         // Update usage data and re-render the chart
         usageData[region] = newUsage;
