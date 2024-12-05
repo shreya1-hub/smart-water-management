@@ -23,25 +23,20 @@
             </form>
         </section>
 
-        <!-- Water Distribution Network Section -->
-        <section id="distribution" class="module">
-            <h2>Water Distribution Network</h2>
-            <p>Connections:</p>
-            <ul id="connections">
-                <li>Fetching data...</li>
-            </ul>
-        </section>
-
         <!-- Water Usage Analysis Section -->
         <section id="usage" class="module">
             <h2>Water Usage Analysis</h2>
             <canvas id="usage-chart" width="400" height="200"></canvas>
-        </section>
-
-        <!-- Leakage Detection Section -->
-        <section id="leakage" class="module">
-            <h2>Leakage Detection</h2>
-            <p id="leak-status">Status: Fetching...</p>
+            <form id="usage-form">
+                <label for="region">Region:</label>
+                <select id="region">
+                    <option value="Urban">Urban</option>
+                    <option value="Agricultural">Agricultural</option>
+                </select>
+                <label for="usage">Enter Usage (Liters):</label>
+                <input type="number" id="usage" required>
+                <button type="button" onclick="updateUsage()">Update Usage</button>
+            </form>
         </section>
     </main>
     <footer>
