@@ -29,15 +29,15 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderUsageChart() {
         const ctx = document.getElementById('usage-chart').getContext('2d');
         if (usageChart) {
-            usageChart.destroy();
+            usageChart.destroy(); // Destroy the previous chart instance
         }
         usageChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Urban', 'Agricultural'],
+                labels: ['Urban', 'Agricultural'], // Regions
                 datasets: [{
                     label: 'Water Usage (Liters)',
-                    data: [usageData.Urban, usageData.Agricultural],
+                    data: [usageData.Urban, usageData.Agricultural], // Usage data
                     backgroundColor: ['#4CAF50', '#2196F3']
                 }]
             },
@@ -53,25 +53,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Function to update water usage data
-   function updateUsage() {
-    // Get the region and usage input values
-    const region = document.getElementById("region").value;
-    const usageInput = document.getElementById("usage").value.trim(); // Get and trim the input value
-    const newUsage = Number(usageInput); // Convert the input to a number
+    function updateUsage() {
+        const region = document.getElementById("region").value;
+        const usageInput = document.getElementById("usage").value.trim();
+        const newUsage = parseFloat(usageInput);
 
-    // Validate the input
-    if (usageInput === "" || isNaN(newUsage) || newUsage < 0) {
-        alert("Please enter a valid usage value (non-negative number).");
-        return; // Exit the function if input is invalid
+        if (usageInput === "" || isNaN(newUsage) || newUsage < 0) {
+            alert("Please enter a valid usage value (non-negative number).");
+            return;
+        }
+
+        usageData[region] = newUsage; // Update the usage data
+        renderUsageChart(); // Re-render the chart with updated data
+        alert(`${region} usage updated to ${newUsage} liters.`);
+        document.getElementById("usage").value = ""; // Clear the input field
     }
-
-    // Update usage data and re-render the chart
-    usageData[region] = newUsage; // Update the data for the selected region
-    renderUsageChart(); // Update the chart dynamically
-    alert(`${region} usage updated to ${newUsage} liters.`); // Show success alert
-    document.getElementById("usage").value = ""; // Clear the input field
-}
-
 
     // Initial rendering
     updatePHLevels();
