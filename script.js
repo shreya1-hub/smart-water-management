@@ -27,48 +27,80 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to render water usage chart
     function renderUsageChart() {
-        const ctx = document.getElementById('usage-chart').getContext('2d');
-        if (usageChart) {
-            usageChart.destroy(); // Destroy the previous chart instance
-        }
-        usageChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Urban', 'Agricultural'],
-                datasets: [{
-                    label: 'Water Usage (Liters)',
-                    data: [usageData.Urban, usageData.Agricultural],
-                    backgroundColor: ['#4CAF50', '#2196F3']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true
+        console.log("Rendering the chart...");
+
+        try {
+            const ctx = document.getElementById('usage-chart').getContext('2d');
+            if (!ctx) {
+                console.error("Canvas element with id 'usage-chart' not found.");
+                return;
+            }
+
+            // Destroy the previous chart instance if it exists
+            if (usageChart) {
+                usageChart.destroy();
+                console.log("Previous chart destroyed.");
+            }
+
+            // Render the new chart
+            usageChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Urban', 'Agricultural'],
+                    datasets: [{
+                        label: 'Water Usage (Liters)',
+                        data: [usageData.Urban, usageData.Agricultural],
+                        backgroundColor: ['#4CAF50', '#2196F3']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
                     }
                 }
-            }
-        });
+            });
+            console.log("Chart rendered successfully.");
+        } catch (error) {
+            console.error("Error in renderUsageChart function:", error);
+        }
     }
 
     // Function to update water usage data
     function updateUsage() {
-        const region = document.getElementById("region").value;
-        const usageInputElement = document.getElementById("usage");
+        console.log("Update Usage function triggered.");
 
-        const usageInput = usageInputElement.value.trim();
-        const newUsage = parseFloat(usageInput);
+        try {
+            const region = document.getElementById("region").value;
+            const usageInputElement = document.getElementById("usage");
 
-        if (usageInput === "" || isNaN(newUsage) || newUsage < 0) {
-            alert("Please enter a valid usage value (non-negative number).");
-            return;
+            if (!usageInputElement) {
+                console.error("Input field with id 'usage' not found.");
+                alert("Error: Input field not found. Please check your HTML structure.");
+                return;
+            }
+
+            const usageInput = usageInputElement.value.trim();
+            const newUsage = parseFloat(usageInput);
+
+            if (usageInput === "" || isNaN(newUsage) || newUsage < 0) {
+                alert("Please enter a valid usage value (non-negative number).");
+                console.error("Invalid input:", usageInput);
+                return;
+            }
+
+            usageData[region] = newUsage;
+            console.log("Updated usage data:", usageData);
+
+            renderUsageChart(); // Refresh the chart dynamically
+            alert(`${region} usage updated to ${newUsage} liters.`);
+            usageInputElement.value = ""; // Clear the input field
+        } catch (error) {
+            console.error("Error in updateUsage function:", error);
+            alert("An unexpected error occurred. Check the console for details.");
         }
-
-        usageData[region] = newUsage; // Update the data for the selected region
-        renderUsageChart(); // Refresh the chart dynamically
-        alert(`${region} usage updated to ${newUsage} liters.`);
-        usageInputElement.value = ""; // Clear the input field
     }
 
     // Initial rendering
