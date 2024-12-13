@@ -42,41 +42,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const historyList = new LinkedList();
 
-    // Initial data for historical records
     historyList.add({ type: "pH", value: 7.2 });
     historyList.add({ type: "pH", value: 6.8 });
     historyList.add({ type: "Usage", region: "Urban", value: 500 });
     historyList.add({ type: "Usage", region: "Agricultural", value: 1000 });
 
     function updatePHLevels() {
-        console.log("Updating displayed pH levels...");
         const phLevelsElement = document.getElementById("ph-levels");
-
-        // Update displayed pH levels with status
         phLevelsElement.innerHTML = `pH Levels: ${pHLevels.join(", ")} ${
             pHLevels.some(ph => ph < 6.5 || ph > 8.5) ? "(Detected Issues)" : "(All Good)"
         }`;
-
-        console.log("Displayed pH levels updated:", pHLevels);
         checkPHAlerts();
     }
 
     function addPHLevel() {
         const newPH = parseFloat(document.getElementById("new-ph").value);
-
         if (isNaN(newPH) || newPH === "") {
             alert("Please enter a valid pH level.");
-            console.log("Invalid pH input:", newPH);
             return;
         }
-
-        console.log("Adding new pH level:", newPH);
-        pHLevels.push(newPH); // Add the new pH level to the list
-        console.log("Updated pH levels array:", pHLevels);
-
-        updatePHLevels(); // Update the display with the new pH level
-        saveHistory({ type: "pH", value: newPH }); // Save to historical data
-        document.getElementById("new-ph").value = ""; // Clear the input field
+        pHLevels.push(newPH);
+        updatePHLevels();
+        saveHistory({ type: "pH", value: newPH });
+        document.getElementById("new-ph").value = "";
     }
 
     function renderUsageChart() {
@@ -101,21 +89,18 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateUsage() {
         const region = document.getElementById("region").value;
         const usageInput = parseFloat(document.getElementById("usage").value);
-
         if (isNaN(usageInput) || usageInput < 0) {
             alert("Please enter a valid usage value.");
             return;
         }
-
         usageData[region] = usageInput;
-        console.log(`Updated ${region} usage to:`, usageInput);
         renderUsageChart();
         saveHistory({ type: "Usage", region, value: usageInput });
         document.getElementById("usage").value = "";
     }
 
     function checkPHAlerts() {
-        alertsQueue = []; // Clear old alerts
+        alertsQueue = [];
         pHLevels.forEach(ph => {
             if (ph < 6.5 || ph > 8.5) {
                 alertsQueue.push(`Alert: Unsafe pH level detected (${ph}).`);
@@ -144,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function () {
             : "No historical data yet.";
     }
 
-    // Initial Rendering
     updatePHLevels();
     renderUsageChart();
     displayAlerts();
