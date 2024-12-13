@@ -1,18 +1,55 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Mock data for pH levels and water usage
     let pHLevels = [7.2, 6.0];
     let usageData = { Urban: 500, Agricultural: 1000 };
-    let usageChart; // Declare chart globally
+    let alertsQueue = [];
+    let usageChart;
 
-    // Function to update the displayed pH levels
+    class LinkedListNode {
+        constructor(data) {
+            this.data = data;
+            this.next = null;
+        }
+    }
+
+    class LinkedList {
+        constructor() {
+            this.head = null;
+        }
+
+        add(data) {
+            const newNode = new LinkedListNode(data);
+            if (!this.head) {
+                this.head = newNode;
+            } else {
+                let current = this.head;
+                while (current.next) {
+                    current = current.next;
+                }
+                current.next = newNode;
+            }
+        }
+
+        display() {
+            let current = this.head;
+            const history = [];
+            while (current) {
+                history.push(current.data);
+                current = current.next;
+            }
+            return history;
+        }
+    }
+
+    const historyList = new LinkedList();
+
     function updatePHLevels() {
         const phLevelsElement = document.getElementById("ph-levels");
         phLevelsElement.innerHTML = `pH Levels: ${pHLevels.join(", ")} ${
             pHLevels.some(ph => ph < 6.5 || ph > 8.5) ? "(Detected Issues)" : "(All Good)"
         }`;
+        checkPHAlerts();
     }
 
-    // Function to add a new pH level
     function addPHLevel() {
         const newPH = parseFloat(document.getElementById("new-ph").value);
         if (isNaN(newPH) || newPH === "") {
@@ -21,93 +58,72 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         pHLevels.push(newPH);
         updatePHLevels();
+        saveHistory({ type: "pH", value: newPH });
         document.getElementById("new-ph").value = "";
-        alert("New pH Level Added Successfully!");
     }
 
-    // Function to render water usage chart
     function renderUsageChart() {
-        console.log("Rendering the chart...");
-
-        try {
-            const ctx = document.getElementById('usage-chart').getContext('2d');
-            if (!ctx) {
-                console.error("Canvas element with id 'usage-chart' not found.");
-                return;
-            }
-
-            // Destroy the previous chart instance if it exists
-            if (usageChart) {
-                usageChart.destroy();
-                console.log("Previous chart destroyed.");
-            }
-
-            // Render the new chart
-            usageChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Urban', 'Agricultural'],
-                    datasets: [{
-                        label: 'Water Usage (Liters)',
-                        data: [usageData.Urban, usageData.Agricultural],
-                        backgroundColor: ['#4CAF50', '#2196F3']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: true
-                        }
-                    }
-                }
-            });
-            console.log("Chart rendered successfully.");
-        } catch (error) {
-            console.error("Error in renderUsageChart function:", error);
+        const ctx = document.getElementById('usage-chart').getContext('2d');
+        if (usageChart) {
+            usageChart.destroy();
         }
+        usageChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Urban', 'Agricultural'],
+                datasets: [{
+                    label: 'Water Usage (Liters)',
+                    data: [usageData.Urban, usageData.Agricultural],
+                    backgroundColor: ['#4CAF50', '#2196F3']
+                }]
+            },
+            options: { responsive: true }
+        });
     }
 
-    // Function to update water usage data
     function updateUsage() {
-        console.log("Update Usage function triggered.");
-
-        try {
-            const region = document.getElementById("region").value;
-            const usageInputElement = document.getElementById("usage");
-
-            if (!usageInputElement) {
-                console.error("Input field with id 'usage' not found.");
-                alert("Error: Input field not found. Please check your HTML structure.");
-                return;
-            }
-
-            const usageInput = usageInputElement.value.trim();
-            const newUsage = parseFloat(usageInput);
-
-            if (usageInput === "" || isNaN(newUsage) || newUsage < 0) {
-                alert("Please enter a valid usage value (non-negative number).");
-                console.error("Invalid input:", usageInput);
-                return;
-            }
-
-            usageData[region] = newUsage;
-            console.log("Updated usage data:", usageData);
-
-            renderUsageChart(); // Refresh the chart dynamically
-            alert(`${region} usage updated to ${newUsage} liters.`);
-            usageInputElement.value = ""; // Clear the input field
-        } catch (error) {
-            console.error("Error in updateUsage function:", error);
-            alert("An unexpected error occurred. Check the console for details.");
+        const region = document.getElementById("region").value;
+        const usageInput = parseFloat(document.getElementById("usage").value);
+        if (isNaN(usageInput) || usageInput < 0) {
+            alert("Please enter a valid usage value.");
+            return;
         }
+        usageData[region] = usageInput;
+        renderUsageChart();
+        saveHistory({ type: "Usage", region, value: usageInput });
+        document.getElementById("usage").value = "";
     }
 
-    // Initial rendering
+    function checkPHAlerts() {
+        alertsQueue = [];
+        pHLevels.forEach(ph => {
+            if (ph < 6.5 || ph > 8.5) {
+                alertsQueue.push(`Alert: Unsafe pH level detected (${ph}).`);
+            }
+        });
+        displayAlerts();
+    }
+
+    function displayAlerts() {
+        const alertsDiv = document.getElementById("alerts-container");
+        alertsDiv.innerHTML = alertsQueue.length
+            ? alertsQueue.map(alert => `<p>${alert}</p>`).join("")
+            : "No alerts yet.";
+    }
+
+    function saveHistory(data) {
+        historyList.add(data);
+        displayHistory();
+    }
+
+    function displayHistory() {
+        const historyDiv = document.getElementById("history-container");
+        const historyData = historyList.display();
+        historyDiv.innerHTML = historyData.length
+            ? historyData.map(entry => `<p>${JSON.stringify(entry)}</p>`).join("")
+            : "No historical data yet.";
+    }
+
     updatePHLevels();
     renderUsageChart();
-
-    // Expose functions to the global scope
-    window.addPHLevel = addPHLevel;
-    window.updateUsage = updateUsage;
 });
