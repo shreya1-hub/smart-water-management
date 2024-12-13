@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
-    let pHLevels = [7.2, 6.0];
+    // Initial Data
+    let pHLevels = [7.2, 6.8, 6.0];
     let usageData = { Urban: 500, Agricultural: 1000 };
-    let alertsQueue = [];
+    let alertsQueue = ["Alert: Unsafe pH level detected (6.0)"]; // Initial alert
     let usageChart;
 
+    // Linked List for Historical Data
     class LinkedListNode {
         constructor(data) {
             this.data = data;
@@ -42,6 +44,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const historyList = new LinkedList();
 
+    // Add Initial Historical Data
+    historyList.add({ type: "pH", value: 7.2 });
+    historyList.add({ type: "pH", value: 6.8 });
+    historyList.add({ type: "Usage", region: "Urban", value: 500 });
+    historyList.add({ type: "Usage", region: "Agricultural", value: 1000 });
+
+    // Update pH Levels Display
     function updatePHLevels() {
         const phLevelsElement = document.getElementById("ph-levels");
         phLevelsElement.innerHTML = `pH Levels: ${pHLevels.join(", ")} ${
@@ -50,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
         checkPHAlerts();
     }
 
+    // Add New pH Level
     function addPHLevel() {
         const newPH = parseFloat(document.getElementById("new-ph").value);
         if (isNaN(newPH) || newPH === "") {
@@ -62,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("new-ph").value = "";
     }
 
+    // Render Water Usage Chart
     function renderUsageChart() {
         const ctx = document.getElementById('usage-chart').getContext('2d');
         if (usageChart) {
@@ -81,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Update Water Usage
     function updateUsage() {
         const region = document.getElementById("region").value;
         const usageInput = parseFloat(document.getElementById("usage").value);
@@ -94,8 +106,9 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("usage").value = "";
     }
 
+    // Check for Unsafe pH Levels and Add Alerts
     function checkPHAlerts() {
-        alertsQueue = [];
+        alertsQueue = []; // Clear old alerts
         pHLevels.forEach(ph => {
             if (ph < 6.5 || ph > 8.5) {
                 alertsQueue.push(`Alert: Unsafe pH level detected (${ph}).`);
@@ -104,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
         displayAlerts();
     }
 
+    // Display Alerts
     function displayAlerts() {
         const alertsDiv = document.getElementById("alerts-container");
         alertsDiv.innerHTML = alertsQueue.length
@@ -111,11 +125,13 @@ document.addEventListener('DOMContentLoaded', function () {
             : "No alerts yet.";
     }
 
+    // Save Data to Historical Records
     function saveHistory(data) {
         historyList.add(data);
         displayHistory();
     }
 
+    // Display Historical Data
     function displayHistory() {
         const historyDiv = document.getElementById("history-container");
         const historyData = historyList.display();
@@ -124,6 +140,9 @@ document.addEventListener('DOMContentLoaded', function () {
             : "No historical data yet.";
     }
 
+    // Initial Rendering
     updatePHLevels();
     renderUsageChart();
+    displayAlerts();
+    displayHistory();
 });
