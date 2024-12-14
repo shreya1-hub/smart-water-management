@@ -4,44 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let alertsQueue = [];
     let usageChart;
 
-    class LinkedListNode {
-        constructor(data) {
-            this.data = data;
-            this.next = null;
-        }
-    }
-
-    class LinkedList {
-        constructor() {
-            this.head = null;
-        }
-
-        add(data) {
-            const newNode = new LinkedListNode(data);
-            if (!this.head) {
-                this.head = newNode;
-            } else {
-                let current = this.head;
-                while (current.next) {
-                    current = current.next;
-                }
-                current.next = newNode;
-            }
-        }
-
-        display() {
-            let current = this.head;
-            const history = [];
-            while (current) {
-                history.push(current.data);
-                current = current.next;
-            }
-            return history;
-        }
-    }
-
-    const historyList = new LinkedList();
-
     function updatePHLevels() {
         const phLevelsElement = document.getElementById("ph-levels");
         phLevelsElement.innerHTML = `pH Levels: ${pHLevels.join(", ")} ${
@@ -52,21 +14,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function addPHLevel() {
         const newPH = parseFloat(document.getElementById("new-ph").value);
-        console.log("New pH input:", newPH);
 
         if (isNaN(newPH) || newPH === "") {
             alert("Please enter a valid pH level.");
-            console.log("Invalid input detected.");
             return;
         }
 
-        console.log("Adding new pH level:", newPH);
         pHLevels.push(newPH);
-        console.log("Updated pH levels array:", pHLevels);
-
         updatePHLevels();
         document.getElementById("new-ph").value = "";
-        alert("New pH Level Added Successfully!");
     }
 
     function renderUsageChart() {
@@ -98,10 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         usageData[region] = usageInput;
-        console.log(`Updated ${region} usage to:`, usageInput);
         renderUsageChart();
-        saveHistory({ type: "Usage", region, value: usageInput });
-        document.getElementById("usage").value = "";
     }
 
     function checkPHAlerts() {
@@ -121,21 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
             : "No alerts yet.";
     }
 
-    function saveHistory(data) {
-        historyList.add(data);
-        displayHistory();
-    }
-
-    function displayHistory() {
-        const historyDiv = document.getElementById("history-container");
-        const historyData = historyList.display();
-        historyDiv.innerHTML = historyData.length
-            ? historyData.map(entry => `<p>${JSON.stringify(entry)}</p>`).join("")
-            : "No historical data yet.";
-    }
-
     updatePHLevels();
     renderUsageChart();
     displayAlerts();
-    displayHistory();
 });
