@@ -42,11 +42,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const historyList = new LinkedList();
 
-    historyList.add({ type: "pH", value: 7.2 });
-    historyList.add({ type: "pH", value: 6.8 });
-    historyList.add({ type: "Usage", region: "Urban", value: 500 });
-    historyList.add({ type: "Usage", region: "Agricultural", value: 1000 });
-
     function updatePHLevels() {
         const phLevelsElement = document.getElementById("ph-levels");
         phLevelsElement.innerHTML = `pH Levels: ${pHLevels.join(", ")} ${
@@ -57,14 +52,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function addPHLevel() {
         const newPH = parseFloat(document.getElementById("new-ph").value);
+        console.log("New pH input:", newPH);
+
         if (isNaN(newPH) || newPH === "") {
             alert("Please enter a valid pH level.");
+            console.log("Invalid input detected.");
             return;
         }
+
+        console.log("Adding new pH level:", newPH);
         pHLevels.push(newPH);
+        console.log("Updated pH levels array:", pHLevels);
+
         updatePHLevels();
-        saveHistory({ type: "pH", value: newPH });
         document.getElementById("new-ph").value = "";
+        alert("New pH Level Added Successfully!");
     }
 
     function renderUsageChart() {
@@ -89,11 +91,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateUsage() {
         const region = document.getElementById("region").value;
         const usageInput = parseFloat(document.getElementById("usage").value);
+
         if (isNaN(usageInput) || usageInput < 0) {
             alert("Please enter a valid usage value.");
             return;
         }
+
         usageData[region] = usageInput;
+        console.log(`Updated ${region} usage to:`, usageInput);
         renderUsageChart();
         saveHistory({ type: "Usage", region, value: usageInput });
         document.getElementById("usage").value = "";
