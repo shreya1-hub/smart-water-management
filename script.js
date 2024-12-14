@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Data storage
     let pHLevels = [7.2, 6.8, 6.0];
     let usageData = { Urban: 500, Agricultural: 1000 };
     let alertsQueue = [];
     let usageChart;
 
+    // Function to update pH levels
     function updatePHLevels() {
         const phLevelsElement = document.getElementById("ph-levels");
         phLevelsElement.innerHTML = `pH Levels: ${pHLevels.join(", ")} ${
@@ -12,7 +14,8 @@ document.addEventListener('DOMContentLoaded', function () {
         checkPHAlerts();
     }
 
-    function addPHLevel() {
+    // Function to add a pH level
+    window.addPHLevel = function () {
         const newPH = parseFloat(document.getElementById("new-ph").value);
 
         if (isNaN(newPH) || newPH === "") {
@@ -22,9 +25,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         pHLevels.push(newPH);
         updatePHLevels();
+        saveHistory({ type: "pH", value: newPH }); // Save to historical data
         document.getElementById("new-ph").value = "";
-    }
+        alert("New pH Level Added Successfully!");
+    };
 
+    // Function to render the usage chart
     function renderUsageChart() {
         const ctx = document.getElementById('usage-chart').getContext('2d');
         if (usageChart) {
@@ -44,7 +50,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function updateUsage() {
+    // Function to update water usage
+    window.updateUsage = function () {
         const region = document.getElementById("region").value;
         const usageInput = parseFloat(document.getElementById("usage").value);
 
@@ -55,8 +62,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         usageData[region] = usageInput;
         renderUsageChart();
-    }
+        saveHistory({ type: "Usage", value: `${region} - ${usageInput} liters` }); // Save to historical data
+    };
 
+    // Function to check pH alerts
     function checkPHAlerts() {
         alertsQueue = [];
         pHLevels.forEach(ph => {
@@ -67,6 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
         displayAlerts();
     }
 
+    // Function to display alerts
     function displayAlerts() {
         const alertsDiv = document.getElementById("alerts-container");
         alertsDiv.innerHTML = alertsQueue.length
@@ -74,6 +84,15 @@ document.addEventListener('DOMContentLoaded', function () {
             : "No alerts yet.";
     }
 
+    // Function to save historical data
+    function saveHistory(data) {
+        const historyDiv = document.getElementById("history-container");
+        const newEntry = document.createElement("p");
+        newEntry.textContent = `Type: ${data.type}, Value: ${data.value}`;
+        historyDiv.appendChild(newEntry);
+    }
+
+    // Initialize the app
     updatePHLevels();
     renderUsageChart();
     displayAlerts();
